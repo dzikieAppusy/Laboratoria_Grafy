@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import networkx as nx #libka do rysowania grafów
 import math
 
-
 class AdjacencyMatrix:
     def __init__(self, nodes):
         self.nodes = nodes
