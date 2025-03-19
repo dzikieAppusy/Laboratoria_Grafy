@@ -1,8 +1,10 @@
 from zestaw_01.graph_coder import AdjacencyList
+import random
 
 def check_zero_elements(A):
     return all(a == 0 for a in A)
 
+# Zadanie 1
 # Funkcja sprawdzająca czy dana sekwencja liczb jest ciągiem graficznym
 def graphic_sequence(A):
     A = A[:]
@@ -66,6 +68,35 @@ def construct_graph(A):
 
     return adj_list if all(d == 0 for d in degrees) else None
 
+# Zadanie 2
+def randomize_graph(adj_list, iterations = 10):
+    edges = list(set((min(a,b), max(a,b)) for a in adj_list for b in adj_list[a]))
+
+    for _ in range(iterations):
+        if len(edges) < 2:
+            break
+        (a,b), (c,d) = random.sample(edges, 2)
+
+        if a==d or b==c in edges or (b,c) in edges:
+            continue
+
+        # Usuwanie starych krawędzi
+        edges.remove((a,b))
+        edges.remove((c,d))
+        adj_list[a].remove(b)
+        adj_list[b].remove(a)
+        adj_list[c].remove(d)
+        adj_list[d].remove(c)
+
+        # dodawanie nowych krawędzi
+        edges.append((a, d))
+        edges.append((b, c))
+        adj_list[a].append(d)
+        adj_list[d].append(a)
+        adj_list[b].append(c)
+        adj_list[c].append(b)
+
+    return adj_list
 
 # Test cases
 A = [1, 3, 2, 3, 2, 4, 1]
@@ -80,4 +111,8 @@ print(adj_list_A)
 AdjList = AdjacencyList(len(A))
 AdjList.list = adj_list_A
 AdjList.display()
+AdjList.visualize()
+
+# Testy randomizacji grafu
+AdjList.list=randomize_graph(AdjList.list)
 AdjList.visualize()
