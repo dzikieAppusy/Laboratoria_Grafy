@@ -34,7 +34,7 @@ def main():
         adjacency_matrix.to_adjacency_list().display()
         adjacency_matrix.to_incidence_matrix().display()
         adjacency_matrix.visualize()
-    
+        
     elif choice == 2:
         nodes = int(input("Podaj liczbę wierzchołków: "))
         edges = int(input("Podaj liczbę krawędzi: "))
