@@ -28,18 +28,25 @@ class WeightedGraph(Graph):
 
         return weights
     
-    def visualize(self):
+    def visualize_weighted(self, spanning_tree=False, mst=None, total=None):
         G = nx.Graph()
         G.add_nodes_from(range(self.nodes))
 
-        
+        edge_colors = []
+        mst_set = set()
+        if spanning_tree and mst:
+            mst_set = {(min(u, v), max(u, v)) for u, v, _ in mst}
+
         for u in range(self.nodes):
             for v in range(u + 1, self.nodes):
                 if self.adjacency_matrix.matrix[u][v] == 1:
                     weight = self.weights[u][v]
                     G.add_edge(u, v, weight=weight)
+                    if (u, v) in mst_set or (v, u) in mst_set:
+                        edge_colors.append('red')
+                    else:
+                        edge_colors.append('gray')
 
-       
         pos = {
             i: (
                 math.cos(2 * math.pi * i / self.nodes),
@@ -52,11 +59,13 @@ class WeightedGraph(Graph):
         circle = plt.Circle((0, 0), 1.05, color='gray', fill=False, linestyle='dashed')
         ax.add_patch(circle)
 
-        nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray', ax=ax)
-        
-        
+        nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color=edge_colors, ax=ax)
+
         edge_labels = nx.get_edge_attributes(G, 'weight')
         nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=10, ax=ax)
+
+        if spanning_tree and total is not None:
+            plt.title(f"Minimalne drzewo rozpinające (waga: {total})")
 
         ax.set_xlim(-1.2, 1.2)
         ax.set_ylim(-1.2, 1.2)
@@ -76,8 +85,8 @@ def generate_gnp(n, p):
 
 
 def main():
-    graph =generate_gnp(7,0.5)
-    graph.visualize()
+    graph = generate_gnp(7,0.5)
+    graph.visualize_weighted()
 
 
 if __name__ == "__main__":
