@@ -51,7 +51,10 @@ def randomize_graph(adj_list, iterations = 10):
             break
         (a,b), (c,d) = random.sample(edges, 2)
 
-        if a==d or b==c in edges or (b,c) in edges:
+        new_edge1 = tuple(sorted((a, d)))
+        new_edge2 = tuple(sorted((b, c)))
+
+        if (a == d or b == c) or (new_edge1 in edges) or (new_edge2 in edges):
             continue
 
         # Usuwanie starych krawędzi
