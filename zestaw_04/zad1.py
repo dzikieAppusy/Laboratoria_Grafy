@@ -24,12 +24,19 @@ class AdjacencyList:
     
     def visualize(self):
         G = nx.DiGraph()
+        G.add_nodes_from(range(self.nodes))
         for node, neighbors in self.list.items():
             for neighbor in neighbors:
                 G.add_edge(node, neighbor)
-        pos = {i: (math.cos(2 * math.pi * i / self.nodes), math.sin(2 * math.pi * i / self.nodes)) for i in range(self.nodes)}
+        pos = {
+            i: (
+                math.cos(2 * math.pi * i / self.nodes),
+                math.sin(2 * math.pi * i / self.nodes)
+            )
+            for i in range(self.nodes)
+        }
         
-        fig, ax = plt.subplots(figsize=(6,6))
+        fig, ax = plt.subplots(figsize=(6, 6))
         circle = plt.Circle((0, 0), 1.05, color='gray', fill=False, linestyle='dashed')
         ax.add_patch(circle)
         nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray', ax=ax)
