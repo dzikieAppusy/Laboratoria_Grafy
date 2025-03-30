@@ -19,6 +19,9 @@ class AdjacencyList:
         for key, value in self.list.items():
             print(f"{key}: {value}")
     
+    def get_neighbors(self, v):
+        return self.list.get(v, [])
+    
     def visualize(self):
         G = nx.DiGraph()
         for node, neighbors in self.list.items():

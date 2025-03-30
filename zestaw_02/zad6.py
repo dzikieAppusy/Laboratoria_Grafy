@@ -145,7 +145,7 @@ def dfs(node, start, count, visited, path, adj_list, n):
     
 
 def main():
-    print("Podaj liczbę wierzchołków:")
+    print("Podaj liczbę wierzchołków (warunek: n >= 3):")
     n = int(input())
     while n < 3:
         print("Liczba wierzchołków musi być większa lub równa 3 żeby występowanie cyklu Hamiltona było możliwe.")
