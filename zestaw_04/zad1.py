@@ -149,5 +149,5 @@ def generate_gnp(n, p):
                 continue #nie ma pętli
             if random.random() < p:
                 graph.add_edge(u, v)
-                print( u, "->", v)
+                # print( u, "->", v)
     return graph

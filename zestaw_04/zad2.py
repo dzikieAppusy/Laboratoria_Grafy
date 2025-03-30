@@ -74,10 +74,9 @@ def main():
     for node, component in enumerate(components):
         component_groups[component].append(node)
 
-    print("Strongly Connected Components:")
+    print("Silnie spójne składowe:")
     for component, nodes in component_groups.items():
-        print(f"Component {component}: {nodes}")
+        print(f"Składowa {component}: {nodes}")
     
-
 if __name__ == "__main__":
     main()
