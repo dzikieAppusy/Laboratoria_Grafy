@@ -9,19 +9,24 @@ class AdjacencyList:
     def __init__(self, nodes):
         self.nodes = nodes
         self.list = {i: [] for i in range(nodes)}
-    
+
     def add_edge(self, u, v):
-        self.list[u].append(v) 
+        self.list[u].append(v)
         self.list[u].sort()
-    
+
+    def add_node(self):
+        new_index = len(self.list)
+        self.list[new_index] = []
+        self.nodes +=1
+
     def display(self):
         print("Lista sąsiedztwa:")
         for key, value in self.list.items():
             print(f"{key}: {value}")
-    
+
     def get_neighbors(self, v):
         return self.list.get(v, [])
-    
+
     def visualize(self):
         G = nx.DiGraph()
         G.add_nodes_from(range(self.nodes))
@@ -127,6 +132,9 @@ class Digraph:
 
     def add_edge(self, u, v):
         self.adjacency_list.add_edge(u, v)
+
+    def add_node(self):
+        self.adjacency_list.add_node()
 
     def display(self):
         print("=== Macierz sąsiedztwa ===\n")

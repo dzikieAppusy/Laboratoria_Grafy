@@ -13,9 +13,19 @@ class DigraphWithWeights:
         self.adjacency_list = AdjacencyList(nodes)
         self.weights = {}
 
+    def copy(self):
+        digraph = DigraphWithWeights(self.nodes)
+        digraph.adjacency_list = self.adjacency_list
+        digraph.weights = self.weights
+        return digraph
+
     def add_edge(self, u, v, weight):
         self.adjacency_list.add_edge(u, v)
         self.weights[(u, v)] = weight
+
+    def add_node(self):
+        self.adjacency_list.add_node()
+        self.nodes+=1
 
     def display(self):
         print("=== Lista sąsiedztwa ===\n")
