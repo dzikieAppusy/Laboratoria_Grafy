@@ -1,7 +1,6 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import networkx as nx #libka do rysowania grafów
 import math
 
 class AdjacencyMatrix:
@@ -16,23 +15,46 @@ class AdjacencyMatrix:
     def display(self):
         print("Macierz sąsiedztwa:")
         print(self.matrix)
-    
-    def visualize(self):
-        G = nx.Graph()
-        G.add_nodes_from(range(self.nodes))  
-        for u in range(self.nodes):
-            for v in range(u + 1, self.nodes):
-                if self.matrix[u][v] == 1:
-                    G.add_edge(u, v)
-        pos = {i: (math.cos(2 * math.pi * i / self.nodes), math.sin(2 * math.pi * i / self.nodes)) for i in range(self.nodes)}
-        
-        fig, ax = plt.subplots(figsize=(6,6))
-        circle = plt.Circle((0, 0), 1.05, color='gray', fill=False, linestyle='dashed')
-        ax.add_patch(circle)
-        nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray', ax=ax)
-        ax.set_xlim(-1.2, 1.2)
-        ax.set_ylim(-1.2, 1.2)
+
+    def visualize(self, circle=True):
+        fig, ax = plt.subplots(figsize=(6, 6))
+        G_nodes = range(self.nodes)
+
+        edges = [(u, v) for u in range(self.nodes) for v in range(u + 1, self.nodes) if self.matrix[u][v] == 1]
+
+        pos = {}
+        if circle:
+            for i in G_nodes:
+                x = math.cos(2 * math.pi * i / self.nodes)
+                y = math.sin(2 * math.pi * i / self.nodes)
+                pos[i] = (x, y)
+        else:
+            grid_size = int(math.ceil(math.sqrt(self.nodes)))
+            for i in G_nodes:
+                col = i % grid_size
+                row = i // grid_size
+                x = col * 1.5
+                y = -row * 1.5
+                pos[i] = (x, y)
+
+        for node in G_nodes:
+            x, y = pos[node]
+            ax.plot(x, y, 'o', color='lightblue', markersize=10)
+            ax.text(x, y, str(node), ha='center', va='center')
+
+        for u, v in edges:
+            x0, y0 = pos[u]
+            x1, y1 = pos[v]
+            ax.plot([x0, x1], [y0, y1], color='gray')
+
+        if circle:
+            circle_patch = plt.Circle((0, 0), 1.05, color='gray', fill=False, linestyle='dashed')
+            ax.add_patch(circle_patch)
+
+        ax.set_title("Wizualizacja grafu" + (" (koło)" if circle else " (siatka)"))
         ax.set_aspect('equal')
+        ax.axis('off')
+        plt.tight_layout()
         plt.show()
 
     def to_adjacency_list(self):
@@ -71,9 +93,9 @@ class IncidenceMatrix:
         print("Macierz incydencji:")
         print(self.matrix)
     
-    def visualize(self):
+    def visualize(self, circle=True):
         adjacency_matrix = self.to_adjacency_matrix()
-        adjacency_matrix.visualize()
+        adjacency_matrix.visualize(circle)
 
     def to_adjacency_matrix(self):
         Amatrix = AdjacencyMatrix(self.nodes)
@@ -110,29 +132,51 @@ class AdjacencyList:
         for key, value in self.list.items():
             print(f"{key}: {value}")
     
-    def visualize(self):
-        G = nx.Graph()
-        G.add_nodes_from(range(self.nodes)) 
-        for node, neighbors in self.list.items():
-            for neighbor in neighbors:
-                G.add_edge(node, neighbor)
-        
-        pos = {
-            i: (
-                math.cos(2 * math.pi * i / self.nodes),
-                math.sin(2 * math.pi * i / self.nodes)
-            )
-            for i in range(self.nodes)
-        }
-        
+    def visualize(self, circle=True):
         fig, ax = plt.subplots(figsize=(6, 6))
-        circle = plt.Circle((0, 0), 1.05, color='gray', fill=False, linestyle='dashed')
-        ax.add_patch(circle)
+        G_nodes = range(self.nodes)
 
-        nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray', ax=ax)
-        ax.set_xlim(-1.2, 1.2)
-        ax.set_ylim(-1.2, 1.2)
+        seen_edges = set()
+        edges = []
+        for u in self.list:
+            for v in self.list[u]:
+                if (v, u) not in seen_edges:
+                    edges.append((u, v))
+                    seen_edges.add((u, v))
+
+        pos = {}
+        if circle:
+            for i in G_nodes:
+                x = math.cos(2 * math.pi * i / self.nodes)
+                y = math.sin(2 * math.pi * i / self.nodes)
+                pos[i] = (x, y)
+        else:
+            grid_size = int(math.ceil(math.sqrt(self.nodes)))
+            for i in G_nodes:
+                col = i % grid_size
+                row = i // grid_size
+                x = col * 1.5
+                y = -row * 1.5
+                pos[i] = (x, y)
+
+        for node in G_nodes:
+            x, y = pos[node]
+            ax.plot(x, y, 'o', color='lightblue', markersize=10)
+            ax.text(x, y, str(node), ha='center', va='center')
+
+        for u, v in edges:
+            x0, y0 = pos[u]
+            x1, y1 = pos[v]
+            ax.plot([x0, x1], [y0, y1], color='gray')
+
+        if circle:
+            circle_patch = plt.Circle((0, 0), 1.05, color='gray', fill=False, linestyle='dashed')
+            ax.add_patch(circle_patch)
+
+        ax.set_title("Wizualizacja grafu" + (" (koło)" if circle else " (siatka)"))
         ax.set_aspect('equal')
+        ax.axis('off')
+        plt.tight_layout()
         plt.show()
     
     def to_adjacency_matrix(self):

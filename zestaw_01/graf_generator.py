@@ -1,5 +1,6 @@
 import random
 from graph_coder import AdjacencyMatrix
+import matplotlib.pyplot as plt
 
 class Graph:
     def __init__(self, nodes):
@@ -21,8 +22,8 @@ class Graph:
         print("=== Macierz incydencji ===\n")
         self.incidence_matrix.display()
 
-    def visualize(self):
-        self.adjacency_matrix.visualize()
+    def visualize(self, circle=True):
+        self.adjacency_matrix.visualize(circle)
 
 def generate_gnp(n, p):
     """Generuje graf losowy w modelu G(n, p)"""
@@ -49,22 +50,3 @@ def generate_gnl(n, l):
             graph.add_edge(u, v)
 
     return graph
-def main():
-    graph1 = generate_gnp(20, 0.5)
-    print("\n--- Graf G(n, p) ---")
-    graph1.display()
-    graph1.visualize()
-
-    graph2 = generate_gnl(20, 190)
-    print("\n--- Graf G(n, l) ---")
-    graph2.display()
-    graph2.visualize()
-
-    graph3 = generate_gnl(4, 3)
-    graph3.visualize()
-
-    graph4 = generate_gnp(6, 0.3)
-    graph4.visualize()
-
-if __name__ == "__main__":
-    main()

@@ -1,5 +1,8 @@
 from graph_coder import AdjacencyMatrix, IncidenceMatrix, AdjacencyList
-
+from graf_generator import *
+import os
+import numpy as np
+import matplotlib.pyplot as plt
 #podając wejście dla macierzy podajemy po prostu po kolei : wiersz + znak nowej linii. 
 # Dla listy sąsiedztwa nie podajemy indeksu wierzchołka, np:
 # Dla grafu :
@@ -17,48 +20,46 @@ from graph_coder import AdjacencyMatrix, IncidenceMatrix, AdjacencyList
 # 0 1 2 5 
 # 0 1 4
 
-def main():
-    print("Wybierz format wejściowy:")
-    print("1 - Macierz sąsiedztwa")
-    print("2 - Macierz incydencji")
-    print("3 - Lista sąsiedztwa")
-    choice = int(input("Wybór: "))
-    
-    if choice == 1:
-        nodes = int(input("Podaj liczbę wierzchołków: "))
-        adjacency_matrix = AdjacencyMatrix(nodes)
-        print("Podaj macierz sąsiedztwa wiersz po wierszu:")
-        for i in range(nodes):
-            adjacency_matrix.matrix[i] = list(map(int, input().split()))
-        adjacency_matrix.display()
-        adjacency_matrix.to_adjacency_list().display()
-        adjacency_matrix.to_incidence_matrix().display()
-        adjacency_matrix.visualize()
-        
-    elif choice == 2:
-        nodes = int(input("Podaj liczbę wierzchołków: "))
-        edges = int(input("Podaj liczbę krawędzi: "))
-        incidence_matrix = IncidenceMatrix(nodes, edges)
-        print("Podaj macierz incydencji wiersz po wierszu:")
-        for i in range(nodes):
-            incidence_matrix.matrix[i] = list(map(int, input().split()))
-        incidence_matrix.display()
-        incidence_matrix.to_adjacency_list().display()
-        incidence_matrix.to_adjacency_matrix().display()
-        incidence_matrix.visualize()
-    
-    elif choice == 3:
-        nodes = int(input("Podaj liczbę wierzchołków: "))
-        adjacency_list = AdjacencyList(nodes)
-        print("Podaj listę sąsiedztwa")
-        for i in range(nodes):
-            adjacency_list.list[i] = list(map(int, input().split()))
-        adjacency_list.display()
-        adjacency_list.to_adjacency_matrix().display()
-        adjacency_list.to_incidence_matrix().display()
-        adjacency_list.visualize()
-    else:
-        print("Niepoprawny wybór.")
+def save_matrix_to_file(matrix, filename):
+    np.savetxt(filename, matrix, fmt='%d')
+
+def save_adj_list_to_file(adj_list_obj, filename):
+    with open(filename, 'w') as f:
+        for node, neighbors in adj_list_obj.list.items():
+            line = f"{node}: {' '.join(map(str, neighbors))}\n"
+            f.write(line)
+
+def generate_10_graphs():
+    os.makedirs("output", exist_ok=True)
+    os.chdir("output")
+
+    # 5 grafów G(n, p) - z wizualizacją kołową
+    for i in range(1, 6):
+        graph = generate_gnp(8, 0.4)
+        prefix = f"gnp_{i}"
+
+        save_matrix_to_file(graph.adjacency_matrix.matrix, f"adj_matrix_{prefix}.txt")
+        save_adj_list_to_file(graph.adjacency_list, f"adj_list_{prefix}.txt")
+        save_matrix_to_file(graph.incidence_matrix.matrix, f"inc_matrix_{prefix}.txt")
+
+        plt.figure()
+        graph.adjacency_matrix.visualize(circle=True)
+        plt.savefig(f"{prefix}.png")
+        plt.close()
+
+    # 5 grafów G(n, l) - z wizualizacją siatkową
+    for i in range(1, 6):
+        graph = generate_gnl(8, 10)
+        prefix = f"gnl_{i}"
+
+        save_matrix_to_file(graph.adjacency_matrix.matrix, f"adj_matrix_{prefix}.txt")
+        save_adj_list_to_file(graph.adjacency_list, f"adj_list_{prefix}.txt")
+        save_matrix_to_file(graph.incidence_matrix.matrix, f"inc_matrix_{prefix}.txt")
+
+        plt.figure()
+        graph.adjacency_matrix.visualize(circle=False)
+        plt.savefig(f"{prefix}.png")
+        plt.close()
 
 if __name__ == "__main__":
-    main()
+    generate_10_graphs()
