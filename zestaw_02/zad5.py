@@ -1,6 +1,14 @@
 from zestaw_01.graph_coder import AdjacencyList
 import random
 
+
+
+'''
+Napisać program do generowania losowych grafów k-regularnych.
+'''
+
+
+
 #from graphicSequence
 def construct_graph(A):
     A = A[:]
@@ -90,7 +98,7 @@ def main():
             print("Stopień wierzchołków musi być niższy niż ich ilość.")
             k = int(input())
     while (n * k) % 2 != 0:
-            print("Stopień wierzchołków musi być parzysty jeśli ich ilość jest nieparzysta.")
+            print("Stopień wierzchołków * ilość wierzchołków musi być liczbą parzystą.") #bo 2 wierzchołki połączone 1 krawędzią, ilość stopni * ilość wierzchołków zawsze parzysta
             k = int(input())
         
             
