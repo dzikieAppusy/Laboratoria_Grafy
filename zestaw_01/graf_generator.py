@@ -1,5 +1,5 @@
 import random
-from graph_coder import AdjacencyMatrix
+from .graph_coder import AdjacencyMatrix
 import matplotlib.pyplot as plt
 
 class Graph:

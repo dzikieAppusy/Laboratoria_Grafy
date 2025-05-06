@@ -6,7 +6,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 class WeightedGraph(Graph):
-    
+
     def __init__(self, nodes, p=0.3, min_weight=1, max_weight=10):
         super().__init__(nodes)
         for u in range(nodes):
@@ -28,7 +28,7 @@ class WeightedGraph(Graph):
 
         return weights
     
-    def visualize_weighted(self, spanning_tree=False, mst=None, total=None):
+    def visualize_weighted(self, spanning_tree=False, mst=None, total=None, layout="circle"):
         G = nx.Graph()
         G.add_nodes_from(range(self.nodes))
 
@@ -47,17 +47,22 @@ class WeightedGraph(Graph):
                     else:
                         edge_colors.append('gray')
 
-        pos = {
-            i: (
-                math.cos(2 * math.pi * i / self.nodes),
-                math.sin(2 * math.pi * i / self.nodes)
-            )
-            for i in range(self.nodes)
-        }
+        if layout == "circle":
+            pos = {
+                i: (
+                    math.cos(2 * math.pi * i / self.nodes),
+                    math.sin(2 * math.pi * i / self.nodes)
+                )
+                for i in range(self.nodes)
+            }
+        elif layout == "spring":
+            pos = nx.spring_layout(G, seed=42)
 
-        fig, ax = plt.subplots(figsize=(6, 6))
-        circle = plt.Circle((0, 0), 1.05, color='gray', fill=False, linestyle='dashed')
-        ax.add_patch(circle)
+        fig, ax = plt.subplots(figsize=(10, 10))  # Zwiększony rozmiar
+
+        if layout == "circle":
+            circle = plt.Circle((0, 0), 1.05, color='gray', fill=False, linestyle='dashed')
+            ax.add_patch(circle)
 
         nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color=edge_colors, ax=ax)
 
@@ -66,26 +71,37 @@ class WeightedGraph(Graph):
 
         if spanning_tree and total is not None:
             plt.title(f"Minimalne drzewo rozpinające (waga: {total})")
+        else:
+            plt.title("Graf ważony")
 
-        ax.set_xlim(-1.2, 1.2)
-        ax.set_ylim(-1.2, 1.2)
+        ax.set_xlim(-1.2, 1.2) if layout == "circle" else None
+        ax.set_ylim(-1.2, 1.2) if layout == "circle" else None
         ax.set_aspect('equal')
+        plt.tight_layout()
         plt.show()
+
     
-
-
-def generate_gnp(n, p):
-    """Generuje graf losowy w modelu G(n, p)"""
-    graph = WeightedGraph(n)
-    for u in range(n):
-        for v in range(u + 1, n):
-            if random.random() < p:
-                graph.add_edge(u, v)
-    return graph
+def generate_connected_gnp(n, p):
+    while True:
+        graph = WeightedGraph(n, p)
+        G_nx = nx.Graph()
+        G_nx.add_nodes_from(range(n))
+        for u in range(n):
+            for v in range(u + 1, n):
+                if graph.adjacency_matrix.matrix[u][v] == 1:
+                    G_nx.add_edge(u, v)
+        if nx.is_connected(G_nx):
+            return graph
 
 
 def main():
-    graph = generate_gnp(7,0.5)
+    graph = generate_connected_gnp(7, 0.5)
+    
+    original_show = plt.show
+    def save_show():
+        plt.savefig("weighted_graph.png")
+        plt.close()
+    plt.show = save_show
     graph.visualize_weighted()
 
 

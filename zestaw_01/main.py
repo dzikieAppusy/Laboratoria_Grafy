@@ -1,5 +1,5 @@
-from graph_coder import AdjacencyMatrix, IncidenceMatrix, AdjacencyList
-from graf_generator import *
+from .graph_coder import AdjacencyMatrix, IncidenceMatrix, AdjacencyList
+from .graf_generator import Graph, generate_gnp, generate_gnl
 import os
 import numpy as np
 import matplotlib.pyplot as plt

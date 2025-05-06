@@ -1,5 +1,5 @@
 
-from zestaw_03.weighted_graph import generate_gnp
+from zestaw_03.weighted_graph import generate_connected_gnp
 
 
 def minimum_spanning_tree(G):
@@ -26,7 +26,7 @@ def minimum_spanning_tree(G):
     return mst_edges, total_weight
 
 def main():
-    graph = generate_gnp(7, 0.5)
+    graph = generate_connected_gnp(7, 0.5)
 
     mst, total = minimum_spanning_tree(graph)
     print("Minimum Spanning Tree:")
