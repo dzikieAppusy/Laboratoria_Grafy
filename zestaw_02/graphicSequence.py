@@ -82,7 +82,6 @@ def construct_graph(A):
 
 # Zadanie 2
 # Funkcja losowo modyfikuje graf (bez zmiany stopni wierzchołków) poprzez przetasowywanie krawędzi
-import random
 
 def randomize_graph(adj_list, iterations=10):
     # Tworzymy listę unikalnych krawędzi w formacie (mniejszy_wierzchołek, większy_wierzchołek)
