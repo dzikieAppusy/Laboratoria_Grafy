@@ -1,6 +1,18 @@
 from zestaw_01.graph_coder import AdjacencyList
 import random
 
+
+
+'''
+Napisać program do sprawdzania (dla małych grafów), czy graf jest
+hamiltonowski.
+
+Cykl Hamiltona - zamknięta ścieżka przez każdy wierzchołek 1 raz, zaczyna się i kończy w tym samym wierzchołku.
+Przeszukujemy wgłąb 
+'''
+
+
+
 #from graphicSequence
 def construct_graph(A):
     A = A[:]
@@ -114,14 +126,14 @@ def has_hamiltonian_cycle(adj_list):
     path = []
 
     for start_node in range(n): #próbujemy każdy wierzchołek
-        if dfs(start_node, start_node, 1, visited, path, adj_list, n):
+        if dfs(start_node, start_node, 1, visited, path, adj_list, n): #wywołujemy przeszukiwanie wgłąb
             print("Cykl Hamiltona:", path + [start_node])
             return True
 
     print("Cykl Hamiltona nie znaleziony.")
     return False
 
-def dfs(node, start, count, visited, path, adj_list, n):
+def dfs(node, start, count, visited, path, adj_list, n): #wierzchołek który sprawdzamy, wierzchołek startowy, ile wierzchołków już odwiedzone, lista czy wierzchołek był już odwiedzony, lista ścieżki Hamiltona aktualnie, lista sąsiedztwa, liczba wierzchołków
         visited[node] = True
         path.append(node) #początkowy wierzchołek dodany do cyklu
 
@@ -129,16 +141,16 @@ def dfs(node, start, count, visited, path, adj_list, n):
             if start in adj_list[node]: #ostatni odwiedzony wierzchołek musi być połączony z pierwszym
                 return True
             else:
-                visited[node] = False #cofamy się o 1 krok do góry
+                visited[node] = False #cofamy się o 1 krok do góry, bo cykl nieznaleziony choć przeszliśmy wszystkie wierzchołki
                 path.pop()
                 return False
 
-        for neighbor in adj_list[node]: #wśró tych, które nie zostały jeszcze odwiedzone podczas danego sprawdzania szukamy cyklu
-            if not visited[neighbor]:
+        for neighbor in adj_list[node]: #wśród tych, które nie zostały jeszcze odwiedzone podczas danego sprawdzania szukamy cyklu, czyli idziemy do kolejnych wierzchołków po krawędziach i powinniśmy ostatecznie dojść do tego co jest pierwszy wetdy mamy cykl
+            if not visited[neighbor]: #próbujemy stworzyć cykl zaczynając od kolejnych sąsiadów wierzchołka, aż któraś ścieżka będzie poprawna
                 if dfs(neighbor, start, count + 1, visited, path, adj_list, n):
                     return True
 
-        visited[node] = False
+        visited[node] = False #nie przeszliśmy wszystkich wierzchołków, ale cyklu i tak nie ma więc próbujemy inną kombinację
         path.pop()
         return False
     
@@ -157,7 +169,7 @@ def main():
             print("Stopień wierzchołków musi być niższy niż ich ilość.")
             k = int(input())
     while (n * k) % 2 != 0:
-            print("Stopień wierzchołków musi być parzysty jeśli ich ilość jest nieparzysta.")
+            print("Stopień wierzchołków * ilość wierzchołków musi być liczbą parzystą.")
             k = int(input())
         
             
@@ -175,9 +187,9 @@ def main():
     AdjList.display()
     AdjList.visualize()
     
-    print("ADJ")
+    print("#####")
     print(adj_list)
-    print("ADJ")    
+    print("#####")    
     #na podstawie grafu k-regularnego sprawdzamy czy występuje cykl Hamiltona
     #graf musi być spójny
     comp = components(adj_list)
@@ -187,8 +199,10 @@ def main():
     
     has_hamiltonian_cycle(adj_list)
     
-    print("\n\n\nDla agrafu k-nieregularnego")
     
+    
+    #przykład gdy nie ma cyklu Hamiltona
+    print("\n\n\nDla agrafu k-nieregularnego")
     adj_list = {
         0: [1, 2, 3],
         1: [0, 2],
@@ -202,7 +216,6 @@ def main():
         3: [0, 2]
     }
     # adj_list = randomize_graph(adj_list, iterations=10)
-    
     # wygenerowany graf
     AdjList = AdjacencyList(len(A))
     AdjList.list = adj_list
@@ -215,7 +228,6 @@ def main():
     if len(set(comp)) != 1:
         print("Graf nie jest spójny, nie można znaleźć cyklu Hamiltona.")
         return
-    
     has_hamiltonian_cycle(adj_list)
     
 if __name__ == "__main__":
