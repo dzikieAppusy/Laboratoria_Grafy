@@ -9,28 +9,23 @@ class AdjacencyList:
     def __init__(self, nodes):
         self.nodes = nodes
         self.list = {i: [] for i in range(nodes)}
-
+    
     def add_edge(self, u, v):
-        self.list[u].append(v)
+        self.list[u].append(v) 
         self.list[u].sort()
-
-    def add_node(self):
-        new_index = len(self.list)
-        self.list[new_index] = []
-        self.nodes +=1
-
+    
     def display(self):
         print("Lista sąsiedztwa:")
         for key, value in self.list.items():
             print(f"{key}: {value}")
-
+    
     def get_neighbors(self, v):
         return self.list.get(v, [])
-
+    
     def visualize(self):
         G = nx.DiGraph()
-        G.add_nodes_from(range(self.nodes))
-        for node, neighbors in self.list.items():
+        G.add_nodes_from(range(self.nodes)) #dodanie wierzcholkow
+        for node, neighbors in self.list.items(): #dodanie krawedzi do sasiadow
             for neighbor in neighbors:
                 G.add_edge(node, neighbor)
         pos = {
@@ -52,12 +47,12 @@ class AdjacencyList:
     
     def to_adjacency_matrix(self):
         Amatrix = AdjacencyMatrix(self.nodes)
-        for node in range(self.nodes):  # Explicitly iterate all nodes
+        for node in range(self.nodes):
             for neighbor in self.list[node]:
-                if 0 <= neighbor < self.nodes:  # Boundary check
+                if 0 <= neighbor < self.nodes:
                     Amatrix.matrix[node][neighbor] = 1
                 else:
-                    print(f"Warning: Invalid edge {node}→{neighbor}")
+                    print(f"Blad: {node} -> {neighbor}")
         return Amatrix
     
     def to_incidence_matrix(self):
@@ -82,20 +77,21 @@ class AdjacencyMatrix:
         self.matrix = np.zeros((nodes, nodes), dtype=int)
     
     def add_edge(self, u, v):
-        self.matrix[u][v] = 1
+        self.matrix[u][v] = 1 #krawedz skierowana
     
     def display(self):
-        print("Macierz sąsiedztwa:")
+        print("Macierz sasiedztwa:")
         print(self.matrix)
     
     def visualize(self):
         G = nx.DiGraph()
         for u in range(self.nodes):
             for v in range(u + 1, self.nodes):
-                if self.matrix[u][v] == 1:
+                if self.matrix[u][v] == 1: #jak istnieje krawedz od do
                     G.add_edge(u, v)
-        pos = {i: (math.cos(2 * math.pi * i / self.nodes), math.sin(2 * math.pi * i / self.nodes)) for i in range(self.nodes)}
+        pos = {i: (math.cos(2 * math.pi * i / self.nodes), math.sin(2 * math.pi * i / self.nodes)) for i in range(self.nodes)} #polozenie na okregu
         
+        #rysowanie
         fig, ax = plt.subplots(figsize=(6,6))
         circle = plt.Circle((0, 0), 1.05, color='gray', fill=False, linestyle='dashed')
         ax.add_patch(circle)
@@ -106,7 +102,7 @@ class AdjacencyMatrix:
         plt.show()
 
 
-#czytamy kolumnami od lewej do prawej, w każdej kolumnie jest 1 oraz -1 które wskazują który wierzchołek jest początkowym, a który końcowym danej krawędzi (wiersze - krawędzie, kolumny - wierzchołki)
+#czytamy kolumnami od lewej do prawej, w kazdej kolumnie jest -1 oraz 1 ktore wskazuja ktory wierzchołek jest poczatkowym, a ktory koncowym danej krawedzi (wiersze - krawedzie, kolumny - wierzcholki)
 class IncidenceMatrix:
     def __init__(self, nodes, edges):
         self.nodes = nodes
@@ -114,8 +110,8 @@ class IncidenceMatrix:
         self.matrix = np.zeros((nodes, edges), dtype=int)
     
     def add_edge(self, edge_index, u, v): 
-        self.matrix[u][edge_index] = 1
-        self.matrix[v][edge_index] = -1 
+        self.matrix[u][edge_index] = -1 #wierzcholek poczatkowy
+        self.matrix[v][edge_index] = 1 #wierzcholek koncowy
     
     def display(self):
         print("Macierz incydencji:")
@@ -131,10 +127,7 @@ class Digraph:
         self.adjacency_list = AdjacencyList(nodes)
 
     def add_edge(self, u, v):
-        self.adjacency_list.add_edge(u, v)
-
-    def add_node(self):
-        self.adjacency_list.add_node()
+        self.adjacency_list.add_edge(u, v) #krawedz skierowana od u do v
 
     def display(self):
         print("=== Macierz sąsiedztwa ===\n")
@@ -151,11 +144,11 @@ class Digraph:
 
 def generate_gnp(n, p):
     graph = Digraph(n)
-    for u in range(n):
-        for v in range(n):
+    for u in range(n): #dla kazdego wierzcholka
+        for v in range(n): #wszystkie mozliwe polaczenia krawedzi
             if u == v:
-                continue #nie ma pętli
-            if random.random() < p:
+                continue #nie ma petli, sam do siebie wierzcholek sie nie polaczy krawedzia
+            if random.random() < p: #dodanie krawedzi z prawdopodobienstwem p
                 graph.add_edge(u, v)
                 # print( u, "->", v)
     return graph
