@@ -35,39 +35,64 @@ def dijkstra(graph, reweighted_weights, start):
 
 
 def reweight_edges(graph, h):
+    # Słownik na nowe (przeskalowane) wagi krawędzi
     reweighted_weights = {}
 
+    # Iterujemy po wszystkich wierzchołkach u w grafie
     for u in graph.adjacency_list.list:
+        # Iterujemy po wszystkich sąsiadach v wierzchołka u
         for v in graph.adjacency_list.list[u]:
+            # Pobieramy oryginalną wagę krawędzi (u, v)
+            # Jeśli krawędź nie istnieje, domyślnie waga to +∞
             original_weight = graph.weights.get((u, v), float('inf'))
+
+            # Obliczamy nową wagę zgodnie ze wzorem Johnsona:
+            # w'(u,v) = w(u,v) + h(u) - h(v)
             new_weight = original_weight + h[u] - h[v]
+
+            # Zapisujemy przeważoną wagę do słownika
             reweighted_weights[(u, v)] = new_weight
 
+    # Zwracamy słownik z nowymi wagami krawędzi
     return reweighted_weights
 
-def johnson(G,w):
-    # Dodanie nowego wierzchołka s
-    G_prime = G.copy()
-    G_prime.add_node()
-    s = G_prime.nodes-1
-    for u in range(G.nodes):
-        G_prime.add_edge(s, u, 0)
+def johnson(G, w):
+    # Dodanie nowego wierzchołka s do grafu G'
+    G_prime = G.copy()  # Tworzymy kopię grafu
+    G_prime.add_node()  # Dodajemy nowy wierzchołek (źródło pomocnicze)
+    s = G_prime.nodes - 1  # Indeks nowego wierzchołka
 
+    # Dodajemy krawędzie ze sztucznego wierzchołka s do wszystkich pozostałych wierzchołków
+    for u in range(G.nodes):
+        G_prime.add_edge(s, u, 0)  # Krawędzie o wadze 0
+
+    # Uruchamiamy Bellmana-Forda z wierzchołka s, aby sprawdzić, czy nie ma cykli ujemnych
     if not bellman_ford(G_prime, w, s):
-        raise Exception('Error')
+        raise Exception('Error')  # Jeśli są cykle ujemne, przerywamy algorytm
     else:
-        h=[]
+        h = []
+        # Obliczamy funkcję potencjału h(v) dla każdego wierzchołka v
         for v in range(G_prime.nodes):
             h, helper = bellman_ford(G_prime.adjacency_list, G_prime.weights, v)
-            # h.append(najkrotsz_sciezka(helper,d))
-        reweighted_weights = reweight_edges(G_prime, h)
-        D = [[None for _ in range(G.nodes)] for _ in range(G.nodes)]
-        for u in range(G.nodes):
-            dist_u, _ = dijkstra(G,reweighted_weights,u)
-            for v in range(G.nodes):
-                D[u][v] = dist_u[v] - h[u]+h[v]
-    return D
+            # h zawiera dystanse z s do każdego wierzchołka (potencjały)
+            # `helper` może zawierać dane do odtworzenia ścieżki – nieużywany tutaj
 
+        # Przekształcamy wagi krawędzi w grafie zgodnie z funkcją h:
+        # w'(u,v) = w(u,v) + h(u) - h(v)
+        reweighted_weights = reweight_edges(G_prime, h)
+
+        # Inicjalizujemy macierz D na wyniki (najkrótsze ścieżki między każdą parą wierzchołków)
+        D = [[None for _ in range(G.nodes)] for _ in range(G.nodes)]
+
+        # Dla każdego wierzchołka uruchamiamy Dijkstrę
+        for u in range(G.nodes):
+            dist_u, _ = dijkstra(G, reweighted_weights, u)
+            for v in range(G.nodes):
+                # Odtwarzamy oryginalne odległości z przekształconych wyników:
+                # d(u,v) = d'(u,v) - h(u) + h(v)
+                D[u][v] = dist_u[v] - h[u] + h[v]
+
+    return D  # Zwracamy macierz najkrótszych ścieżek między wszystkimi parami wierzchołków
 if __name__ == '__main__':
     while True:
         graph1 = generate_gnp(8, 0.2)
@@ -75,6 +100,7 @@ if __name__ == '__main__':
         if len(set(components)) == 1:  # dopóki nie wygenerujemy silnie spójnego digrafu
             break
 
+    # Tworzenie nowego słownika
     component_groups = defaultdict(list)
     for node, component in enumerate(components):
         component_groups[component].append(node)
@@ -82,8 +108,10 @@ if __name__ == '__main__':
     print("Silnie spójne składowe:")
     for component, nodes in component_groups.items():
         print(f"Składowa {component}: {nodes}")
+    print()
     graph1.visualize()
     G = dodaj_wagi(graph1.adjacency_list)
     G.zmien_wagi_na_ujemne()
     G.visualize()
-    print(johnson(G,G.weights))
+    for row in johnson(G,G.weights):
+        print(row)
