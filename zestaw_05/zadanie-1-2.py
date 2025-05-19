@@ -252,16 +252,18 @@ class FlowNetwork:
     def visualize(self, showFlows = False):
         self.graph.visualize(showFlows)
 
-def main(N, setupTest):
+def main(N, calcFlow, setupTest):
     flowNetwork = FlowNetwork(N, setupTest)
-    flowNetwork.getMaxFlow()
-    flowNetwork.visualize(True)
+    if calcFlow:
+        flowNetwork.getMaxFlow()
+    flowNetwork.visualize(calcFlow)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generowanie sieci przeplywowej')
     parser.add_argument('--N', type=int, default=2, help='Liczba warstw w sieci')
+    parser.add_argument('--calcFlow', type=bool, default=False, help='Czy obliczyć maksymalny przeplyw')
     parser.add_argument('--setupTest', type=bool, default=False, help='Czy wygenerowac testowy graf')
 
     args = parser.parse_args()
 
-    main(max(2, min(4, args.N)), args.setupTest)
+    main(max(2, min(4, args.N)), args.calcFlow, args.setupTest)
